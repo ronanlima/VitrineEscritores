@@ -6,6 +6,7 @@ import com.br.vitrineescritores.bean.Author;
 import com.br.vitrineescritores.bean.Book;
 import com.br.vitrineescritores.service.AuthorService;
 import com.br.vitrineescritores.service.ServiceFactory;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -26,29 +27,53 @@ public class AuthorAPI {
     private static ListenerAuthor listener;
     private static ListenerBookOfAuthor listenerBookOfAuthor;
 
-    public static void listAuthors(final ListenerAuthor listener) {
+    public static void listAuthors(final ListenerAuthor listener, int page, int limit) {
         AuthorAPI.listener = listener;
 
-        factory.getRetrofit().create(AuthorService.class).listAuthors().enqueue(new Callback<List<Author>>() {
-            @Override
-            public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    listener.callOnSuccess(response.body());
-                } else {
-                    try {
-                        listener.callOnFailure(response.code(), response.errorBody().string());
-                    } catch (IOException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-                }
-            }
+        if (page != 0 || limit != 0) {
+            JsonObject json = new JsonObject();
+            json.addProperty("limit", limit);
+            json.addProperty("page", page);
 
-            @Override
-            public void onFailure(Call<List<Author>> call, Throwable t) {
-                Log.e(TAG, call.toString());
-                listener.callOnFailure(500, t.getMessage());
+            factory.getRetrofit().create(AuthorService.class).listPaginationAuthor(json).enqueue(new Callback<List<Author>>() {
+                @Override
+                public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
+                    callReturnToView(response, AuthorAPI.listener);
+                }
+
+                @Override
+                public void onFailure(Call<List<Author>> call, Throwable t) {
+                    Log.e(TAG, call.toString());
+                    listener.callOnFailure(500, t.getMessage());
+                }
+            });
+        } else {
+            factory.getRetrofit().create(AuthorService.class).listAuthors().enqueue(new Callback<List<Author>>() {
+                @Override
+                public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
+                    callReturnToView(response, AuthorAPI.listener);
+                }
+
+                @Override
+                public void onFailure(Call<List<Author>> call, Throwable t) {
+                    Log.e(TAG, call.toString());
+                    listener.callOnFailure(500, t.getMessage());
+                }
+            });
+        }
+
+    }
+
+    private static void callReturnToView(Response<List<Author>> response, ListenerAuthor listener) {
+        if (response.isSuccessful() && response.body() != null) {
+            listener.callOnSuccess(response.body());
+        } else {
+            try {
+                listener.callOnFailure(response.code(), response.errorBody().string());
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
             }
-        });
+        }
     }
 
     public static void listBookOfAuthor(final List<Author> listAuthors, ListenerBookOfAuthor listenerBook) {

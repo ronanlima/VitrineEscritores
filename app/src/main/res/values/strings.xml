@@ -4,4 +4,5 @@
     <string name="name_author">Monteiro Lobato</string>
     <string name="text_sort">Ordenar</string>
     <string name="text_settings">Configurações</string>
+    <string name="text_carregando">Carregando</string>
 </resources>
