@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.br.vitrineescritores.R;
 import com.br.vitrineescritores.bean.Author;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class AuthorView extends RecyclerView.Adapter<AuthorViewHolder> {
 
     @Override
     public AuthorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(getmContext()).inflate(null, parent, false);
+        View v = LayoutInflater.from(getmContext()).inflate(R.layout.card_view_author, parent, false);
         return new AuthorViewHolder(v);
     }
 
@@ -33,6 +34,7 @@ public class AuthorView extends RecyclerView.Adapter<AuthorViewHolder> {
     public void onBindViewHolder(AuthorViewHolder holder, int position) {
         Author author = getList().get(position);
         holder.getFullName().setText(String.format("%s %s", author.getFirstName(), author.getLastName()));
+        holder.getQuantBooks().setText(String.format(mContext.getResources().getString(R.string.obras_publicadas), 10));
     }
 
     @Override

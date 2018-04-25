@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">VitrineEscritores</string>
-    <string name="livros_publicados">Livros publicados %d</string>
+    <string name="obras_publicadas">Obras publicadas %d</string>
     <string name="name_author">Monteiro Lobato</string>
+    <string name="text_sort">Ordenar</string>
+    <string name="text_settings">Configurações</string>
 </resources>

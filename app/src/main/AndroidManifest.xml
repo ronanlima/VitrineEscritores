@@ -1,12 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.br.vitrineescritores">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-sdk tools:overrideLibrary="com.androidnetworking, android.support.v7.appcompat, android.support.fragment,
-        android.support.coreutils, android.support.graphics.drawable.animated, android.support.graphics.drawable,
-        android.support.coreui, android.support.compat, android.arch.lifecycle" />
 
     <application
         android:allowBackup="true"
