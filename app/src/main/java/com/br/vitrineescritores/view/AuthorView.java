@@ -33,8 +33,10 @@ public class AuthorView extends RecyclerView.Adapter<AuthorViewHolder> {
     @Override
     public void onBindViewHolder(AuthorViewHolder holder, int position) {
         Author author = getList().get(position);
+        int qtdBooks = author.getBooks() != null ? author.getBooks().size() : 0;
+
         holder.getFullName().setText(String.format("%s %s", author.getFirstName(), author.getLastName()));
-        holder.getQuantBooks().setText(String.format(mContext.getResources().getString(R.string.obras_publicadas), 10));
+        holder.getQuantBooks().setText(String.format(mContext.getResources().getString(R.string.obras_publicadas), qtdBooks));
     }
 
     @Override

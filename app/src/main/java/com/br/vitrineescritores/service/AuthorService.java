@@ -23,6 +23,6 @@ public interface AuthorService {
     @GET("authors")
     Call<List<Author>> listPaginationAuthor(@Query("filter") JsonObject params);
 
-    @GET("author/{id}")
+    @GET("authors/{id}/books")
     Call<List<Book>> listBooksOfAuthor(@Path("id") Integer id);
 }

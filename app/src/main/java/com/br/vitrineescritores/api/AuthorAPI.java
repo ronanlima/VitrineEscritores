@@ -24,11 +24,12 @@ public class AuthorAPI {
     public static final String TAG = AuthorAPI.class.getCanonicalName().toUpperCase();
 
     private static ServiceFactory factory = ServiceFactory.getInstance();
-    private static ListenerAuthor listener;
+    private static ListenerAuthor listenerAuthor;
     private static ListenerBookOfAuthor listenerBookOfAuthor;
 
-    public static void listAuthors(final ListenerAuthor listener, int page, int limit) {
-        AuthorAPI.listener = listener;
+    public static void listAuthors(final ListenerAuthor listener, final ListenerBookOfAuthor listenerBook, int page, int limit) {
+        listenerAuthor = listener;
+        listenerBookOfAuthor = listenerBook;
 
         if (page != 0 || limit != 0) {
             JsonObject json = new JsonObject();
@@ -38,7 +39,7 @@ public class AuthorAPI {
             factory.getRetrofit().create(AuthorService.class).listPaginationAuthor(json).enqueue(new Callback<List<Author>>() {
                 @Override
                 public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
-                    callReturnToView(response, AuthorAPI.listener);
+                    callReturnToView(response);
                 }
 
                 @Override
@@ -51,7 +52,7 @@ public class AuthorAPI {
             factory.getRetrofit().create(AuthorService.class).listAuthors().enqueue(new Callback<List<Author>>() {
                 @Override
                 public void onResponse(Call<List<Author>> call, Response<List<Author>> response) {
-                    callReturnToView(response, AuthorAPI.listener);
+                    callReturnToView(response);
                 }
 
                 @Override
@@ -64,28 +65,27 @@ public class AuthorAPI {
 
     }
 
-    private static void callReturnToView(Response<List<Author>> response, ListenerAuthor listener) {
+    private static void callReturnToView(Response<List<Author>> response) {
         if (response.isSuccessful() && response.body() != null) {
-            listener.callOnSuccess(response.body());
+            listBookOfAuthor(response.body());
+            listenerAuthor.callOnSuccess(response.body());
         } else {
             try {
-                listener.callOnFailure(response.code(), response.errorBody().string());
+                listenerAuthor.callOnFailure(response.code(), response.errorBody().string());
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage());
             }
         }
     }
 
-    public static void listBookOfAuthor(final List<Author> listAuthors, ListenerBookOfAuthor listenerBook) {
-        AuthorAPI.listenerBookOfAuthor = listenerBook;
-
+    public static void listBookOfAuthor(final List<Author> listAuthors) {
         for (final Author author : listAuthors) {
             factory.getRetrofit().create(AuthorService.class).listBooksOfAuthor(author.getId()).enqueue(new Callback<List<Book>>() {
                 @Override
                 public void onResponse(Call<List<Book>> call, Response<List<Book>> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         author.setBooks(response.body());
-                        listenerBookOfAuthor.callOnSucces(listAuthors);
+                        listenerBookOfAuthor.callOnSucces(author);
                         // como a chamada é assincrona, não tem como executar o laço inteiro para
                         // só depois enviar o resultado disso. Nesse caso, enviar cada um separado e
                         // mandar atualizar o recyclerView?
@@ -109,7 +109,7 @@ public class AuthorAPI {
     }
 
     public interface ListenerBookOfAuthor extends Serializable {
-        void callOnSucces(List<Author> list);
+        void callOnSucces(Author author);
         void callOnFailure(int returnCode, String msg);
     }
 }
